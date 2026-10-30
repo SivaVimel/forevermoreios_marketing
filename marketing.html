@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Forevermore: Wedding Countdown</title>
+<meta name="description" content="A beautiful countdown to your wedding, live on your Lock Screen, Home Screen and in the Dynamic Island.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Forevermore: Wedding Countdown">
+<meta property="og:description" content="A beautiful countdown to your wedding, live on your Lock Screen, Home Screen and in the Dynamic Island.">
+<meta name="theme-color" content="#FBFAF8">
+<meta name="color-scheme" content="light only">
+<!-- Replace YOUR_APP_ID with the app's Apple ID from App Store Connect (App Information), here and in the App Store links. -->
+<meta name="apple-itunes-app" content="app-id=YOUR_APP_ID">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 112 72%27%3E%3Ccircle cx=%2738%27 cy=%2736%27 r=%2731%27 fill=%27none%27 stroke=%27%23B8975A%27 stroke-width=%277%27/%3E%3Ccircle cx=%2774%27 cy=%2736%27 r=%2731%27 fill=%27none%27 stroke=%27%23B8975A%27 stroke-width=%277%27/%3E%3C/svg%3E">
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #FBFAF8;
+    --mesh-1: #FFFFFF;
+    --mesh-2: #F2EEE9;
+    --mesh-3: #EDE8E2;
+    --text: #1D1D1F;
+    --secondary: rgba(29, 29, 31, 0.56);
+    --tertiary: rgba(29, 29, 31, 0.36);
+    --panel: rgba(255, 255, 255, 0.62);
+    --panel-border: rgba(29, 29, 31, 0.06);
+    --hairline: rgba(29, 29, 31, 0.10);
+    --gold: #B8975A;
+    --gold-light: #E9D7AA;
+    --gold-deep: #8F7340;
+    --button: #1D1D1F;
+    --button-text: #FFFFFF;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    min-height: 100vh;
+    background-color: var(--bg);
+    background-image:
+      radial-gradient(60% 50% at 15% 10%, var(--mesh-1) 0%, transparent 70%),
+      radial-gradient(55% 45% at 90% 20%, var(--mesh-2) 0%, transparent 70%),
+      radial-gradient(70% 60% at 50% 100%, var(--mesh-3) 0%, transparent 70%);
+    background-attachment: fixed;
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .script { font-family: "Snell Roundhand", "Apple Chancery", "Segoe Script", cursive; font-weight: 700; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 24px; }
+
+  /* Hero */
+  .hero { text-align: center; padding: 96px 0 72px; }
+  .rings { width: 112px; height: 72px; margin: 0 auto 32px; display: block; }
+  .eyebrow {
+    font-size: 13px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--secondary); margin-bottom: 16px;
+  }
+  h1 {
+    font-size: clamp(44px, 8vw, 80px); font-weight: 600; letter-spacing: -0.035em; line-height: 1.04;
+  }
+  .lede {
+    max-width: 560px; margin: 22px auto 0; font-size: clamp(18px, 2.4vw, 21px); color: var(--secondary);
+  }
+  .badge-note { margin-top: 20px; font-weight: 500; font-size: 13px; color: var(--tertiary); }
+  .store {
+    display: inline-flex; align-items: center; gap: 10px; margin-top: 32px; padding: 11px 22px 11px 18px;
+    border-radius: 14px; background: var(--button); color: var(--button-text); text-decoration: none; text-align: left;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+  }
+  .store:hover { opacity: 0.88; }
+  .store:active { transform: scale(0.98); }
+  .store svg { width: 22px; height: 26px; fill: currentColor; flex: none; }
+  .store small { display: block; font-size: 11px; font-weight: 500; line-height: 1.2; opacity: 0.85; }
+  .store strong { display: block; font-size: 19px; font-weight: 600; line-height: 1.15; letter-spacing: -0.01em; }
+  .privacy-band .store { margin-top: 28px; }
+
+  /* Live demo countdown */
+  .demo {
+    margin: 64px auto 0; max-width: 620px; padding: 44px 24px 36px; border-radius: 32px;
+    background: var(--panel); border: 1px solid var(--panel-border);
+    -webkit-backdrop-filter: blur(30px) saturate(1.4); backdrop-filter: blur(30px) saturate(1.4);
+    box-shadow: 0 30px 80px -40px rgba(60, 45, 20, 0.35);
+  }
+  .demo-title { font-size: clamp(34px, 6vw, 46px); color: var(--gold); line-height: 1.1; }
+  .days { font-size: clamp(88px, 18vw, 132px); font-weight: 200; letter-spacing: -0.04em; line-height: 1; margin-top: 22px; font-variant-numeric: tabular-nums; }
+  .caption { font-size: 11px; font-weight: 600; letter-spacing: 0.2em; color: var(--secondary); text-transform: uppercase; }
+  .hms { display: flex; justify-content: center; margin: 22px auto 0; max-width: 360px; }
+  .hms div { flex: 1; }
+  .hms strong { display: block; font-size: clamp(30px, 5vw, 38px); font-weight: 300; font-variant-numeric: tabular-nums; line-height: 1.15; }
+  .demo-date { margin-top: 28px; font-size: 15px; color: var(--secondary); }
+  .demo-date b { display: block; color: var(--text); font-weight: 600; font-size: 17px; }
+
+  /* Sections */
+  section { padding: 72px 0; }
+  .section-head { text-align: center; max-width: 620px; margin: 0 auto 44px; }
+  h2 { font-size: clamp(32px, 5vw, 48px); font-weight: 600; letter-spacing: -0.03em; line-height: 1.1; }
+  .section-head p { margin-top: 14px; font-size: 19px; color: var(--secondary); }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+  .card {
+    padding: 28px; border-radius: 26px; background: var(--panel); border: 1px solid var(--panel-border);
+    -webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px);
+  }
+  .card .icon {
+    width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; margin-bottom: 18px;
+    background: linear-gradient(145deg, var(--gold-light), var(--gold) 55%, var(--gold-deep));
+  }
+  .card .icon svg { width: 22px; height: 22px; stroke: #FFFFFF; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .card h3 { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; }
+  .card p { margin-top: 8px; color: var(--secondary); font-size: 16px; }
+
+  /* Lock Screen mock */
+  .lock {
+    position: relative; width: 100%; max-width: 360px; margin: 0 auto; aspect-ratio: 9 / 19; border-radius: 52px; overflow: hidden;
+    background:
+      radial-gradient(80% 60% at 10% 20%, #F6B3A8 0%, transparent 60%),
+      radial-gradient(80% 70% at 90% 75%, #2D6A8A 0%, transparent 65%),
+      linear-gradient(160deg, #F2C9B8, #6E8FA8 70%, #23465E);
+    box-shadow: 0 40px 90px -40px rgba(30, 40, 60, 0.55), inset 0 0 0 10px #111, inset 0 0 0 11px #333;
+    color: #FFFFFF; text-align: center;
+  }
+  .island { position: absolute; top: 22px; left: 50%; transform: translateX(-50%); width: 108px; height: 32px; border-radius: 20px; background: #000; }
+  .lock-date { position: absolute; top: 76px; width: 100%; font-size: 17px; font-weight: 600; opacity: 0.92; }
+  .lock-time { position: absolute; top: 96px; width: 100%; font-size: 84px; font-weight: 600; letter-spacing: -0.02em; opacity: 0.94; font-family: ui-rounded, -apple-system, sans-serif; }
+  .lock-live { position: absolute; bottom: 64px; left: 22px; right: 22px; }
+  .lock-live .script { font-size: 22px; background: linear-gradient(#F7E9C6, #DDBE7A 55%, #B48C45); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 1px 1px rgba(62, 42, 16, 0.9)); }
+  .lock-cols { display: flex; justify-content: center; align-items: flex-start; margin-top: 6px; }
+  .lock-cols div { padding: 0 9px; }
+  .lock-cols div + div { border-left: 1px solid rgba(255, 255, 255, 0.55); }
+  .lock-cols strong { display: block; font-size: 28px; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.1; text-shadow: 0 0 1px #9C7A3C, 0 0 2px #9C7A3C, 0 2px 8px rgba(0, 0, 0, 0.3); }
+  .lock-cols span { font-size: 7.5px; font-weight: 700; letter-spacing: 0.16em; text-shadow: 0 1px 4px rgba(0, 0, 0, 0.45); }
+  .lock-foot { margin-top: 6px; font-size: 10.5px; font-weight: 600; text-shadow: 0 1px 4px rgba(0, 0, 0, 0.45); }
+
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+  .split h2 { text-align: left; }
+  .split-lede { margin-top: 14px; font-size: 19px; color: var(--secondary); }
+  .list { list-style: none; margin-top: 26px; }
+  .list li { padding: 14px 0; border-top: 1px solid var(--hairline); font-size: 17px; display: flex; gap: 14px; }
+  .list li:last-child { border-bottom: 1px solid var(--hairline); }
+  .list li::before { content: ""; flex: 0 0 8px; height: 8px; margin-top: 9px; border-radius: 50%; background: var(--gold); }
+
+  .styles { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 8px; }
+  .chip { padding: 9px 18px; border-radius: 999px; background: var(--panel); border: 1px solid var(--panel-border); font-size: 15px; font-weight: 500; }
+
+  .privacy-band { text-align: center; padding: 96px 0; }
+  .privacy-band .big { font-size: clamp(30px, 5vw, 44px); font-weight: 600; letter-spacing: -0.03em; }
+  .privacy-band p { margin: 14px auto 0; max-width: 520px; color: var(--secondary); font-size: 18px; }
+  .privacy-band p.big { margin-top: 0; max-width: none; color: var(--text); font-size: clamp(30px, 5vw, 44px); }
+
+  footer { text-align: center; padding: 40px 0 56px; color: var(--tertiary); font-size: 14px; border-top: 1px solid var(--hairline); }
+  footer a { color: var(--secondary); text-decoration: none; }
+
+  @media (max-width: 760px) {
+    .hero { padding: 64px 0 48px; }
+    .split { grid-template-columns: 1fr; gap: 40px; }
+    .split h2, .split-lede { text-align: center; }
+    section { padding: 52px 0; }
+  }
+</style>
+</head>
+<body>
+  <main class="wrap">
+    <header class="hero">
+      <svg class="rings" viewBox="0 0 112 72" aria-hidden="true">
+        <defs>
+          <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#E9D7AA"/><stop offset="0.5" stop-color="#B8975A"/><stop offset="1" stop-color="#8F7340"/>
+          </linearGradient>
+        </defs>
+        <circle cx="38" cy="36" r="31" fill="none" stroke="url(#gold)" stroke-width="4"/>
+        <circle cx="74" cy="36" r="31" fill="none" stroke="url(#gold)" stroke-width="4"/>
+      </svg>
+      <p class="eyebrow">Forevermore: Wedding Countdown</p>
+      <h1>Every moment<br>until forever</h1>
+      <p class="lede">A beautiful countdown to your wedding, live on your Lock Screen, Home Screen and in the Dynamic Island.</p>
+      <a class="store" href="https://apps.apple.com/app/idYOUR_APP_ID"><svg viewBox="0 0 384 470" aria-hidden="true"><path d="M318.7 249.2c-.6-62.2 50.8-92.1 53.1-93.6-28.9-42.3-73.9-48.1-89.9-48.7-38.3-3.9-74.7 22.5-94.1 22.5-19.4 0-49.3-21.9-81-21.3-41.7.6-80.1 24.2-101.6 61.5-43.3 75.1-11.1 186.3 31.1 247.2 20.6 29.8 45.2 63.3 77.5 62.1 31.1-1.2 42.8-20.1 80.4-20.1 37.5 0 48.1 20.1 81 19.5 33.4-.6 54.6-30.4 75.1-60.3 23.7-34.6 33.4-68.1 34-69.8-.7-.3-65.1-25-65.6-99zM256.8 66.4C273.9 45.6 285.5 16.8 282.3-12c-24.7 1-54.6 16.5-72.3 37.2-15.9 18.3-29.8 47.6-26.1 75.7 27.6 2.1 55.8-14 72.9-34.5z" transform="translate(0 12)"/></svg><span><small>Download on the</small><strong>App Store</strong></span></a>
+      <p class="badge-note">For iPhone · iOS 17 or later</p>
+
+      <div class="demo" aria-label="Example countdown">
+        <div class="demo-title script">Sarah &amp; James</div>
+        <div class="days" id="days">108</div>
+        <div class="caption" id="days-label">Days</div>
+        <div class="hms">
+          <div><strong id="hours">00</strong><span class="caption">Hours</span></div>
+          <div><strong id="minutes">00</strong><span class="caption">Minutes</span></div>
+          <div><strong id="seconds">00</strong><span class="caption">Seconds</span></div>
+        </div>
+        <p class="demo-date"><b id="weekday">Saturday</b><span id="long-date">13 February 2027 at 4:00 PM</span></p>
+      </div>
+    </header>
+
+    <section>
+      <div class="split">
+        <div>
+          <h2>Live on your<br>Lock Screen</h2>
+          <p class="split-lede">Days, hours, minutes and seconds, ticking in real time right under the clock. Transparent, so your own wallpaper shows through.</p>
+          <ul class="list">
+            <li>Designed to read clearly on light, dark and colourful wallpapers</li>
+            <li>Choose its size and alignment, and show or hide the title and date</li>
+            <li>Preview every style on your own background first</li>
+            <li>Also appears in the Dynamic Island on supported iPhones</li>
+          </ul>
+        </div>
+        <div class="lock" aria-label="Lock Screen preview">
+          <div class="island"></div>
+          <div class="lock-date" id="lock-date">Saturday, 1 January</div>
+          <div class="lock-time" id="lock-time">9:41</div>
+          <div class="lock-live">
+            <div class="script">Sarah &amp; James</div>
+            <div class="lock-cols">
+              <div><strong id="l-days">108</strong><span>DAYS</span></div>
+              <div><strong id="l-hours">00</strong><span>HOURS</span></div>
+              <div><strong id="l-minutes">00</strong><span>MINUTES</span></div>
+              <div><strong id="l-seconds">00</strong><span>SECONDS</span></div>
+            </div>
+            <div class="lock-foot" id="lock-foot">Saturday · 13 February 2027 · 4:00 PM</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>A style for every taste</h2>
+        <p>Seven Lock Screen looks, or design your own with your colours, edge, typeface and weight.</p>
+      </div>
+      <div class="styles">
+        <span class="chip">Classic</span><span class="chip">Minimal</span><span class="chip">Gold</span>
+        <span class="chip">Editorial</span><span class="chip">Blush</span><span class="chip">Ink</span><span class="chip">Custom</span>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>Made to be yours</h2>
+        <p>Everything you need to count down to the day you say “I do”.</p>
+      </div>
+      <div class="grid">
+        <div class="card">
+          <div class="icon"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg></div>
+          <h3>Your title, your way</h3>
+          <p>Style each word with Normal, Italic or an elegant Script typeface, in any colour. Soft gold by default.</p>
+        </div>
+        <div class="card">
+          <div class="icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg></div>
+          <h3>Widgets</h3>
+          <p>Small, medium and large on your Home Screen, plus circle, rectangle and inline styles on your Lock Screen.</p>
+        </div>
+        <div class="card">
+          <div class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M4 12h16"/><path d="M12 4c2.5 2.6 2.5 13.4 0 16"/></svg></div>
+          <h3>Six soft backgrounds</h3>
+          <p>Pearl, Blush, Sage, Mist, Dusk and Midnight, or your own photo. Used across the app, widgets and wallpaper.</p>
+        </div>
+        <div class="card">
+          <div class="icon"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 8-3 8h18s-3-1-3-8"/><path d="M10.3 20a2 2 0 0 0 3.4 0"/></svg></div>
+          <h3>Gentle reminders</h3>
+          <p>Milestones at 100, 50, 30, 14, 7, 3 and 1 day to go, an optional daily reminder, and a note when the day arrives.</p>
+        </div>
+        <div class="card">
+          <div class="icon"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M9 15l2-2 2 2 2-3"/></svg></div>
+          <h3>Celebration wallpaper</h3>
+          <p>Save a wallpaper made from your title and date, and set it on the day with a simple Shortcuts automation.</p>
+        </div>
+        <div class="card">
+          <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10z"/></svg></div>
+          <h3>And after the day</h3>
+          <p>Once you're married, the countdown becomes a gentle count of the days since you said “I do”.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="privacy-band">
+      <p class="big">Private by design.</p>
+      <p>No account, no sign-in, no ads and no tracking. Everything stays on your iPhone.</p>
+      <a class="store" href="https://apps.apple.com/app/idYOUR_APP_ID"><svg viewBox="0 0 384 470" aria-hidden="true"><path d="M318.7 249.2c-.6-62.2 50.8-92.1 53.1-93.6-28.9-42.3-73.9-48.1-89.9-48.7-38.3-3.9-74.7 22.5-94.1 22.5-19.4 0-49.3-21.9-81-21.3-41.7.6-80.1 24.2-101.6 61.5-43.3 75.1-11.1 186.3 31.1 247.2 20.6 29.8 45.2 63.3 77.5 62.1 31.1-1.2 42.8-20.1 80.4-20.1 37.5 0 48.1 20.1 81 19.5 33.4-.6 54.6-30.4 75.1-60.3 23.7-34.6 33.4-68.1 34-69.8-.7-.3-65.1-25-65.6-99zM256.8 66.4C273.9 45.6 285.5 16.8 282.3-12c-24.7 1-54.6 16.5-72.3 37.2-15.9 18.3-29.8 47.6-26.1 75.7 27.6 2.1 55.8-14 72.9-34.5z" transform="translate(0 12)"/></svg><span><small>Download on the</small><strong>App Store</strong></span></a>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>Questions? <a href="mailto:sivavimelrajhen@gmail.com">sivavimelrajhen@gmail.com</a></p>
+      <p style="margin-top:6px">© 2026 Siva Vimel Rajhen. iPhone, Dynamic Island and App Store are trademarks of Apple Inc.</p>
+    </div>
+  </footer>
+
+<script>
+  // Example countdown that always runs 108 days ahead of now, landing on a Saturday at 4 PM.
+  (function () {
+    var now = new Date();
+    var target = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 108, 16, 0, 0);
+    while (target.getDay() !== 6) target.setDate(target.getDate() + 1);
+    function pad(n) { return (n < 10 ? "0" : "") + n; }
+    function set(id, value) { var el = document.getElementById(id); if (el) el.textContent = value; }
+    var weekday = target.toLocaleDateString("en-GB", { weekday: "long" });
+    var date = target.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+    set("weekday", weekday);
+    set("long-date", date + " at 4:00 PM");
+    set("lock-foot", weekday + " · " + date + " · 4:00 PM");
+    set("lock-date", now.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" }));
+    function tick() {
+      var t = new Date();
+      var left = Math.max(0, Math.floor((target - t) / 1000));
+      var d = Math.floor(left / 86400), h = Math.floor(left % 86400 / 3600), m = Math.floor(left % 3600 / 60), s = left % 60;
+      set("days", d); set("days-label", d === 1 ? "Day" : "Days");
+      set("hours", pad(h)); set("minutes", pad(m)); set("seconds", pad(s));
+      set("l-days", d); set("l-hours", pad(h)); set("l-minutes", pad(m)); set("l-seconds", pad(s));
+      set("lock-time", t.getHours() % 12 === 0 ? "12:" + pad(t.getMinutes()) : (t.getHours() % 12) + ":" + pad(t.getMinutes()));
+    }
+    tick();
+    setInterval(tick, 1000);
+  })();
+</script>
+</body>
+</html>
